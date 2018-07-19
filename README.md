@@ -7,6 +7,117 @@ https://github.com/steffen-g/lenovo-a10
 https://github.com/durandmiller/lenovo-a10
 
 
+# Install Instructions
+
+## Prepare a Debootstrap USB stick
+Create a USB stick with a rootfs of your favorite distribution. This example is for Debian but it should work the same way for Ubuntu:
+
+### Create a rootfs USB stick
+Anyone who has a Debian-based system can simply install apt-get debootstrap. Then partition any USB stick and then format it with ext3 or ext4.
+All commands are executed as root.
+
+#### Step 1: Mount USB (replace sdX with the appropriate device [you can use dmesg or df to figure this out]):
+Mount /dev/sdX1 /mnt
+
+#### Step 2: Create Debootstrap files on the USB key (ie. that's now mounted on /mnt) (you can also add other packages here) (this debootstrap assumes Debian Stretch):
+
+Debootstrap --foreign --arch = armhf --include = module-init-tools,
+Udev, netbase, ifupdown, iproute, openssh-server, dhcpcd, iputils-ping, wget,
+Net-tools, ntpdate, uboot-mkimage, uboot-envtools, vim, usbutils, build-essential,
+Hdparm, wireless-tools, wpasupplicant --variant = minbase stretch /mnt
+Http://ftp.de.debian.org/debian
+
+
+#### Step 3: Preparing to flash special Kernel files on the Lenovo Ideapad A10 laptop
+
+There is a kernel that must be used to allow boot from USB: boot-sda1-init-sh.img http://gsg-elektronik.de/download/a10/boot-sda1-init-sh.img
+This is an Android bootimage consisting of kernel and initrd.
+
+##### Flashing the "Boot from USB" kernel
+
+1. First download the flashtool from here ( https://github.com/steffen-g/lenovo-a10/tree/master/rkflashtool-5.1-src ) and compile. [You can use the GitHub instructions for the same tool]
+
+2. Plug in the Lenovo laptop to your main linux machine and make the laptop go into bootloader mode by physically bridging of the pads and pressing the power button (or alternatively press and hold the powerbutton while also press the magnifying glass button and" R "when you turn on, if you use dmesg in the terminal of your main linux machine the Lenovo with will appear with USB ID 2207: 310b.)(or if in android run the "adb reboot bootloader" in the terminal while the laptop is in developer mode while running android).
+
+3. Flash the first boot from usb img from your main linux machine: boot-sda1-init-sh.img http://gsg-elektronik.de/download/a10/boot-sda1-init-sh.img:
+
+```shell
+$ sudo ./rkflashtool-5.1-src/rkflashtool w 0x008000 0x00008000 < boot-sda1-init-sh.img
+```
+
+4. You will see the following in the terminal
+```shell
+$ rkflashtool: fatal: premature end-of-file reached.
+```
+
+5. Plug in the usb key with the debootstrap files and reset the lenovo laptop.
+
+If the reset completes successfully, the lenovo laptop should now boot into an unfinished Debian statea and the screen will display
+
+```shell
+#
+```
+
+6. Finish debootstrap process on the lenovo A10 laptop:
+```shell
+cd /debootstrap
+mount -o remount,rw /
+```
+
+this will mount the usb with the debootstrap files and the command prompt will state
+```shell
+[] EXT4-fs (sdX1): re-mounted. Opts: barrier=1,data=ordered
+```
+
+7.  type in the following:
+```shell
+./debootstrap --second-stage
+
+command line prompt will display:
+```shell
+Install core packages...
+```
+and the rest of the linux installation will proceed
+
+8. type passwd in the shell prompt:
+```shell
+passwd
+```
+to set your password
+
+9. Wait until that above processes complete.
+
+10. Reboot the laptop (hold power + magnifying glass and "R" button. Flash this kernel from your main linux machine: boot-sda1-normal.img http://gsg-elektronik.de/download/a10/boot-sda1-normal.img
+sudo ./rkflashtool-5.1-src/rkflashtool w 0x008000 0x00008000 < boot-sda1-normal.img
+
+11. After a reset, the device will boot into a complete Debian installation from USB stick. At this point, you can set up WLAN with wpa_supplicant, if you want Xorg and a window manager.
+[I don't think I've the wpa supplicant steps correct, when I tried it caused my laptop to crash]
+
+
+##### Connect to wifi via wpa_supplicant
+
+Create a config file in /etc/wpa_supplicant.conf
+
+Example:
+```shell
+network={
+    ssid="ssid_name"
+    psk="password"
+}
+```
+
+Run WPA Supplicant
+```shell
+wpa_supplicant -B -iwlan0 -c/etc/wpa_supplicant.conf -Dwext
+```
+
+Run
+```shell
+dhcpcd wlan0
+or dhclient -r
+dhclient wlan0
+```
+
 ## Packages from APT
 
 adwaita-icon-theme
