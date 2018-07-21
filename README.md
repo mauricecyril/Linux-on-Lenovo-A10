@@ -34,7 +34,16 @@ Mount /dev/sdX1 /mnt
 Debootstrap --foreign --arch = armhf --include = module-init-tools,
 Udev, netbase, ifupdown, iproute, openssh-server, dhcpcd, iputils-ping, wget,
 Net-tools, ntpdate, uboot-mkimage, uboot-envtools, vim, usbutils, build-essential,
-Hdparm, wireless-tools, wpasupplicant --variant = minbase stretch /mnt
+Hdparm, wireless-tools, wpasupplicant, surf, inkscape, handbrake, arduino, openssh-client, 
+ipython, ipython3, chromium, apt, git, automake, autoconf, pkg-config, libcurl4-openssl-dev, 
+libjansson-dev, libssl-dev, libgmp-dev, g++, screen, legit, ledger, calcurse, aria2, cmus, mc, 
+mutt, mpd, htop, task, lftp, woof, finch, links, elinks, w3m, bastet, freesweep, dtrx, rename, 
+renameutils, tree, lfm, moc, mpg123, mps-youtube, feh, zathura, qalculate, tpp, bash, zsh, multitail, 
+jed, wordgrinder, figlet, toilet, grc, python, python3, python3-flask, python3-django, python3-bottle, 
+python3-scipy, python3-matplotlib, python3-pandas, python3-sql, python3-sqlparse, python3-sqlalchemy, 
+python3-jsonpickle, python3-jsonschema, python3-jsmin, python3-pil, sqlite3, ninvaders, pacman4console, 
+nsnake, greed, bsdgames, moon-buggy, libncurses5-dev, libsdl2-dev, robotfindskitten, zangband, gnuchess
+ --variant = minbase stretch /mnt
 Http://ftp.de.debian.org/debian
 
 
